@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgroSmart Enhanced Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #2e7d32, #81c784);
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #1b1b1b;
+      padding: 10px;
+    }
+    .login-container {
+      background: white;
+      border-radius: 15px;
+      padding: 3rem 3.5rem;
+      width: 380px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .login-container h2 {
+      font-weight: 700;
+      color: #256d48;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 1.75rem;
+      position: relative;
+    }
+    label {
+      display: block;
+      color: #4a4a4a;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      user-select: none;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      font-size: 1.05rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #256d48;
+      outline: none;
+      box-shadow: 0 0 8px #81c784aa;
+    }
+    .show-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      user-select: none;
+      font-weight: 600;
+      cursor: pointer;
+      color: #666;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+    .show-password:hover {
+      color: #256d48;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      color: #444;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .checkbox-label input {
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+    }
+    .btn-login {
+      width: 100%;
+      background-color: #256d48;
+      border: none;
+      color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn-login:hover:not(:disabled) {
+      background-color: #1b4e31;
+    }
+    .btn-login:disabled {
+      background-color: #a3c49a;
+      cursor: not-allowed;
+    }
+    .error-message {
+      height: 22px;
+      color: #d9534f;
+      font-weight: 600;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      margin-bottom: 1rem;
+    }
+    .error-message.show {
+      opacity: 1;
+    }
+    .spinner {
+      border: 3px solid #e0e0e0;
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      display: inline-block;
+    }
+    @keyframes spin {
+      0% {transform: rotate(0deg);}
+      100% {transform: rotate(360deg);}
+    }
+    /* Password Strength Meter */
+    #strengthMeter {
+      height: 6px;
+      width: 100%;
+      background: #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 6px;
+      display: none;
+    }
+    #strengthMeter div {
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    #strengthMeter.weak div {
+      width: 33%;
+      background: #d9534f;
+    }
+    #strengthMeter.medium div {
+      width: 66%;
+      background: #f0ad4e;
+    }
+    #strengthMeter.strong div {
+      width: 100%;
+      background: #5cb85c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container" role="main" aria-labelledby="loginTitle">
+    <h2 id="loginTitle">AgroSmart Login</h2>
+    
+    <div role="alert" aria-live="assertive" id="errorMessage" class="error-message"></div>
+    
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" aria-required="true" aria-describedby="userHelp" placeholder="Enter your username" autocomplete="username" />
+      <small id="userHelp" style="color:#888; font-size:0.85rem;">Use 'admin' for demo login</small>
+    </div>
+
+    <div class="form-group" style="margin-bottom:0;">
+      <label for="password">Password</label>
+      <input type="password" id="password" aria-required="true" aria-describedby="pwdHelp" placeholder="Enter your password" autocomplete="current-password" />
+      <span class="show-password" id="togglePassword" tabindex="0" role="button" aria-pressed="false" aria-label="Show password">Show</span>
+      <div id="strengthMeter"><div></div></div>
+      <small id="pwdHelp" style="color:#888; font-size:0.85rem;">Use 'admin123' for demo login</small>
+    </div>
+
+    <label class="checkbox-label" for="rememberMe">
+      <input type="checkbox" id="rememberMe" />
+      Remember me
+    </label>
+
+    <button type="button" class="btn-login" id="loginBtn" aria-describedby="errorMessage">Login</button>
+  </div>
+
+  <script>
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const togglePassword = document.getElementById('togglePassword');
+    const strengthMeter = document.getElementById('strengthMeter');
+
+    // Password show/hide toggle
+    togglePassword.addEventListener('click', togglePwd);
+    togglePassword.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePwd();
+      }
+    });
+    function togglePwd() {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePassword.textContent = 'Hide';
+        togglePassword.setAttribute('aria-pressed', 'true');
+      } else {
+        passwordInput.type = 'password';
+        togglePassword.textContent = 'Show';
+        togglePassword.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    // Password strength checker
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      let strength = 0;
+      if (val.length >= 6) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/\d/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+      
+      if(val.length === 0){
+        strengthMeter.style.display = 'none';
+      } else {
+        strengthMeter.style.display = 'block';
+      }
+
+      if(strength <= 1){
+        strengthMeter.className = 'weak';
+      } else if(strength <= 3){
+        strengthMeter.className = 'medium';
+      } else {
+        strengthMeter.className = 'strong';
+      }
+    });
+
+    function validateLogin(username, password) {
+      // Demo validation
+      return username === 'admin' && password === 'admin123';
+    }
+
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.classList.add('show');
+    }
+    function clearError() {
+      errorMessage.textContent = '';
+      errorMessage.classList.remove('show');
+    }
+
+    async function performLogin() {
+      clearError();
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        showError('Username and password are required.');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = 'Logging in <span class="spinner"></span>';
+
+      // Simulate async login delay
+      await new Promise(r => setTimeout(r, 1500));
+
+      if (validateLogin(username, password)) {
+        // Save username if remembered
+        if (document.getElementById('rememberMe').checked) {
+          localStorage.setItem('agrosmartUsername', username);
+        } else {
+          localStorage.removeItem('agrosmartUsername');
+        }
+        window.location.href = 'dashboard.html';
+      } else {
+        showError('Invalid username or password.');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+      }
+    }
+
+    loginBtn.addEventListener('click', performLogin);
+
+    // Enter key support
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') {
+        performLogin();
+      }
+    });
+
+    // On page load, prefill remembered username
+    window.addEventListener('load', () => {
+      const savedUsername = localStorage.getItem('agrosmartUsername');
+      if(savedUsername){
+        usernameInput.value = savedUsername;
+        document.getElementById('rememberMe').checked = true;
+      }
+    });
+  </script>
+</body>
+</html>
