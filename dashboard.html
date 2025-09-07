@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgroSmart Automated Dashboard</title>
+<style>
+  /* Reset & Base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f9;
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  header {
+    background-color: #256d48;
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+    user-select: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  .container {
+    max-width: 1200px;
+    margin: 2rem auto 4rem;
+    padding: 0 1rem;
+    animation: fadeIn 1s ease forwards;
+  }
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    user-select: none;
+  }
+  .profile-pic {
+    background-color: #2e7d32;
+    color: white;
+    font-weight: 800;
+    font-size: 2rem;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgb(46 125 50 / 0.6);
+  }
+  .profile-info h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #256d48;
+  }
+  .profile-info p {
+    margin: 3px 0 0 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #5a5a5a;
+  }
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 1.8rem 2rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    margin-bottom: 2.5rem;
+    transition: box-shadow 0.3s ease;
+  }
+  .card:hover {
+    box-shadow: 0 12px 50px rgba(0,0,0,0.1);
+  }
+  h2, h3 {
+    font-weight: 800;
+    color: #2e7d32;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  .sensor-cards {
+    display: flex;
+    justify-content: space-around;
+    gap: 1.8rem;
+    flex-wrap: wrap;
+  }
+  .sensor-card {
+    background-color: #e6f2e9;
+    flex: 1 1 28%;
+    padding: 1.2rem 1.8rem;
+    border-left: 10px solid #2e7d32;
+    border-radius: 12px;
+    box-sizing: border-box;
+    min-width: 250px;
+    text-align: center;
+    user-select: none;
+    cursor: default;
+    transition: background-color 0.4s ease, border-color 0.3s ease;
+  }
+  .sensor-card.alert {
+    background-color: #ffe6e6;
+    border-left-color: #d94f4f;
+  }
+  .sensor-card h3 {
+    font-weight: 900;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+  .sensor-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #256d48;
+    margin-right: 3px;
+  }
+  .sensor-unit {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #5a5a5a;
+  }
+  .pump-control {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.8rem;
+    justify-content: flex-start;
+  }
+  .pump-zone {
+    flex: 1 1 160px;
+    background-color: #e7f3ea;
+    border-radius: 16px;
+    padding: 1rem 1.4rem;
+    border: 3px solid #2e7d32;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    cursor: default;
+    user-select: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  .pump-zone.problem {
+    background-color: #ffe7e7;
+    border-color: #d94f4f;
+  }
+  .pump-zone:hover {
+    box-shadow: 0 0 12px rgba(46,125,50,0.7);
+  }
+  .pump-zone h4 {
+    margin: 0 0 10px 0;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #2c6d2f;
+  }
+  .pump-status {
+    font-weight: 900;
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+    user-select: none;
+  }
+  .status-on {
+    color: #2e7d32;
+    text-shadow: 0 0 3px #1a4c18a0;
+  }
+  .status-off {
+    color: #d9534f;
+    text-shadow: 0 0 3px #7f1b1b90;
+  }
+  .btn-pump {
+    padding: 0.6rem 1.4rem;
+    background-color: #256d48;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    width: 100%;
+    max-width: 130px;
+    text-align: center;
+    outline-offset: 2px;
+  }
+  .btn-pump:hover,
+  .btn-pump:focus-visible {
+    background-color: #1b4e31;
+    box-shadow: 0 0 15px #1b4e3177;
+  }
+  .manual-override {
+    font-size: 0.85rem;
+    color: #f0ad4e;
+    font-weight: 900;
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+    user-select: none;
+    font-style: italic;
+  }
+  .zone-map {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+    margin-top: 1rem;
+    user-select: none;
+  }
+  .zone {
+    background-color: #d6eadf;
+    border-radius: 18px;
+    padding: 1.4rem;
+    font-weight: 900;
+    text-align: center;
+    color: #256d48;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .zone.problem {
+    background-color: #f8d7da;
+    color: #d9534f;
+  }
+  .zone:hover {
+    background-color: #c8e6c9;
+    color: #1b4e22;
+    box-shadow: 0 6px 18px rgba(37,109,72,0.7);
+  }
+  .alerts {
+    list-style: none;
+    padding-left: 0;
+    max-height: 180px;
+    overflow-y: auto;
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: #d9534f;
+  }
+  .alerts li {
+    padding: 0.4rem 0.7rem;
+    border-left: 5px solid #d9534f;
+    margin-bottom: 0.6rem;
+  }
+  footer {
+    background-color: #256d48;
+    color: white;
+    text-align: center;
+    padding: 1.2rem 0;
+    font-weight: 700;
+    user-select: none;
+  }
+  @media (max-width: 900px) {
+    .sensor-cards {
+      flex-direction: column;
+    }
+    .pump-control {
+      flex-direction: column;
+    }
+    .zone-map {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .pump-zone, .sensor-card, .zone {
+      min-width: auto;
+    }
+  }
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 0.5rem;
+    }
+    .btn-pump {
+      max-width: 100%;
+      font-size: 1.1rem;
+    }
+    .profile {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .profile-info h3 {
+      font-size: 1.2rem;
+    }
+    .profile-info p {
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>AgroSmart Dashboard</header>
+
+<div class="container">
+
+  <section class="profile" aria-label="User Profile">
+    <div class="profile-pic" aria-hidden="true">H</div>
+    <div class="profile-info">
+      <h3>Harsh Mudgal</h3>
+      <p>Computer Science Student</p>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="sensor-heading">
+    <h2 id="sensor-heading">Real-Time Sensor Data</h2>
+    <div class="sensor-cards" role="list" id="sensorCardsContainer"></div>
+  </section>
+
+  <section class="card" aria-labelledby="pump-heading">
+    <h2 id="pump-heading">Pump Control</h2>
+    <div class="pump-control" id="pumpControlContainer"></div>
+  </section>
+
+  <section class="card" aria-labelledby="zone-map-heading">
+    <h2 id="zone-map-heading">Zone Map</h2>
+    <div class="zone-map" role="list" id="zoneMapContainer"></div>
+  </section>
+
+  <section class="card" aria-labelledby="alerts-heading">
+    <h2 id="alerts-heading">Alerts & Notifications</h2>
+    <ul class="alerts" role="alert" id="alertsList"></ul>
+  </section>
+
+</div>
+
+<footer>
+  © 2025 AgroSmart - Smart Agriculture Solutions
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const zonesData = [
+    { id: 1, name: 'Zone 1', soilMoisture: 35, temperature: 25, pumpOn: false, manualOverride: false },
+    { id: 2, name: 'Zone 2', soilMoisture: 18, temperature: 23, pumpOn: false, manualOverride: false },
+    { id: 3, name: 'Zone 3', soilMoisture: 48, temperature: 24, pumpOn: false, manualOverride: false },
+    { id: 4, name: 'Zone 4', soilMoisture: 30, temperature: 22, pumpOn: false, manualOverride: false },
+    { id: 5, name: 'Zone 5', soilMoisture: 28, temperature: 20, pumpOn: false, manualOverride: false },
+    { id: 6, name: 'Zone 6', soilMoisture: 45, temperature: 26, pumpOn: false, manualOverride: false }
+  ];
+  const moistureThreshold = 30;
+  const waterLevelThreshold = 20;
+  let waterReservoirLevel = 50;
+
+  const sensorCardsContainer = document.getElementById('sensorCardsContainer');
+  const pumpControlContainer = document.getElementById('pumpControlContainer');
+  const zoneMapContainer = document.getElementById('zoneMapContainer');
+  const alertsList = document.getElementById('alertsList');
+
+  function createDashboardElements() {
+    sensorCardsContainer.innerHTML = '';
+    pumpControlContainer.innerHTML = '';
+    zoneMapContainer.innerHTML = '';
+
+    zonesData.forEach(zone => {
+      const isSoilLow = zone.soilMoisture < moistureThreshold;
+      // Sensor card
+      const sensorCard = document.createElement('div');
+      sensorCard.className = 'sensor-card ' + (isSoilLow ? 'alert' : '');
+      sensorCard.setAttribute('role', 'listitem');
+      sensorCard.innerHTML = `<h3>${zone.name} - Soil Moisture</h3>
+        <div><span class="sensor-value">${zone.soilMoisture.toFixed(1)}</span><span class="sensor-unit">%</span>${isSoilLow ? ' - LOW' : ''}</div>`;
+      sensorCardsContainer.appendChild(sensorCard);
+
+      // Pump control
+      const pumpDiv = document.createElement('div');
+      pumpDiv.className = 'pump-zone ' + (isSoilLow && !zone.pumpOn ? 'problem' : '');
+      pumpDiv.innerHTML = `<h4>${zone.name}</h4>
+        <div class="pump-status ${zone.pumpOn ? 'status-on' : 'status-off'}">Pump ${zone.pumpOn ? 'ON' : 'OFF'}</div>
+        <button class="btn-pump" onclick="togglePump(${zone.id})">${zone.pumpOn ? 'Turn OFF' : 'Turn ON'}</button>`;
+      pumpControlContainer.appendChild(pumpDiv);
+
+      // Zone map
+      const zoneDiv = document.createElement('div');
+      zoneDiv.className = 'zone ' + (isSoilLow ? 'problem' : '');
+      zoneDiv.setAttribute('role', 'listitem');
+      zoneDiv.textContent = zone.name + (isSoilLow ? ' - Soil Low' : '');
+      zoneMapContainer.appendChild(zoneDiv);
+    });
+
+    // Water Reservoir Sensor
+    const waterLevelCard = document.createElement('div');
+    waterLevelCard.className = 'sensor-card ' + (waterReservoirLevel < waterLevelThreshold ? 'alert' : '');
+    waterLevelCard.setAttribute('role', 'listitem');
+    waterLevelCard.innerHTML = `<h3>Water Reservoir Level</h3>
+      <div><span class="sensor-value">${waterReservoirLevel.toFixed(1)}</span><span class="sensor-unit">%</span>${waterReservoirLevel < waterLevelThreshold ? ' - LOW' : ''}</div>`;
+    sensorCardsContainer.appendChild(waterLevelCard);
+  }
+
+  function togglePump(zoneId) {
+    const zone = zonesData.find(z => z.id === zoneId);
+    zone.manualOverride = true;
+    zone.pumpOn = !zone.pumpOn;
+    renderDashboard();
+  }
+
+  function generateAlerts() {
+    const alerts = [];
+    zonesData.forEach(zone => {
+      if (zone.soilMoisture < moistureThreshold) {
+        alerts.push(`${zone.name}: Soil moisture critically low (${zone.soilMoisture.toFixed(1)}%)`);
+      }
+      if (zone.pumpOn && waterReservoirLevel < waterLevelThreshold) {
+        alerts.push(`Warning: Low water reservoir. Pump operation might be affected.`);
+      }
+    });
+    if (waterReservoirLevel < waterLevelThreshold) {
+      alerts.push(`Water reservoir level critically low (${waterReservoirLevel.toFixed(1)}%)`);
+    }
+    return alerts;
+  }
+
+  function renderAlerts() {
+    alertsList.innerHTML = '';
+    const alertMessages = generateAlerts();
+    if (alertMessages.length === 0) {
+      alertsList.innerHTML = '<li>All systems normal.</li>';
+    } else {
+      alertMessages.forEach(msg => {
+        const li = document.createElement('li');
+        li.textContent = msg;
+        alertsList.appendChild(li);
+      });
+    }
+  }
+
+  function autoUpdateSensors() {
+    zonesData.forEach(zone => {
+      if (!zone.manualOverride) {
+        zone.soilMoisture = Math.min(100, Math.max(10, zone.soilMoisture + (Math.random()*3 - 1.5)));
+      }
+    });
+    waterReservoirLevel = Math.min(100, Math.max(5, waterReservoirLevel + (Math.random()*2 - 1)));
+  }
+
+  function autoControlPumps() {
+    zonesData.forEach(zone => {
+      if (!zone.manualOverride) {
+        zone.pumpOn = zone.soilMoisture < moistureThreshold && waterReservoirLevel > waterLevelThreshold;
+      }
+    });
+  }
+
+  function renderDashboard() {
+    createDashboardElements();
+    renderAlerts();
+  }
+
+  window.onload = () => {
+    renderDashboard();
+    setInterval(() => {
+      autoUpdateSensors();
+      autoControlPumps();
+      renderDashboard();
+    }, 5000);
+  };
+</script>
+
+</body>
+</html>
